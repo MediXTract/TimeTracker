@@ -2,7 +2,9 @@
 
 A professional, local-first time-tracking application designed for MediXtract projects. It features a robust check-in/check-out workflow with automated synchronization via Google Drive for Desktop.
 
-![TimeTracker Preview](assets/images/logos/LOGO_TimeTracker_Circular.png)
+<p align="center">
+  <img src="assets/images/logos/LOGO_TimeTracker_Circular.png" alt="TimeTracker Logo" width="160" />
+</p>
 
 ## 🚀 Features
 
