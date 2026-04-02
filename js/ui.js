@@ -1,0 +1,259 @@
+/**
+ * ui.js — UI utilities for MediXtract TimeTracker
+ */
+
+const TTUI = {
+
+    /* ── Toast Notifications ──────────────────── */
+    toast(message, type = 'info', duration = 3200) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const icons = { success: '✓', error: '✗', info: 'ℹ', warning: '⚠' };
+        const el = document.createElement('div');
+        el.className = `toast toast-${type}`;
+        el.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${message}</span>`;
+        container.appendChild(el);
+        setTimeout(() => el.remove(), duration + 200);
+    },
+
+    /* ── Confirm Modal ────────────────────────── */
+    confirm(title, message) {
+        return new Promise(resolve => {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            const overlay = document.getElementById('confirmModal');
+            overlay.classList.remove('hidden');
+
+            const cleanup = (result) => {
+                overlay.classList.add('hidden');
+                resolve(result);
+            };
+            document.getElementById('confirmOk').onclick = () => cleanup(true);
+            document.getElementById('confirmCancel').onclick = () => cleanup(false);
+        });
+    },
+
+    /* ── Save Status ──────────────────────────── */
+    setSaveStatus(state, text) {
+        const el = document.getElementById('saveStatus');
+        if (!el) return;
+        el.className = `save-status ${state}`;
+        el.innerHTML = {
+            saving: '⟳ Saving…',
+            saved: '✓ Saved',
+            error: '✗ Error',
+            '': ''
+        }[state] || text || '';
+    },
+
+    /* ── Header Status ────────────────────────── */
+    updateHeaderStatus(state) {
+        const el = document.getElementById('headerStatus');
+        if (!el) return;
+        el.className = `header-status ${state}`;
+        const texts = {
+            running: 'Running',
+            paused: 'Paused',
+            idle: 'Idle'
+        };
+        el.querySelector('.status-text').textContent = texts[state] || 'Idle';
+    },
+
+    /* ── Folder Status Display ────────────────── */
+    updateFolderStatus(connected, name) {
+        const el = document.getElementById('folderStatus');
+        if (!el) return;
+        if (connected && name) {
+            el.classList.add('connected');
+            el.querySelector('.folder-status-text').textContent = name;
+            el.title = `Connected: ${name}`;
+        } else {
+            el.classList.remove('connected');
+            el.querySelector('.folder-status-text').textContent = 'Connect folder…';
+            el.title = 'Click to connect Google Drive folder';
+        }
+    },
+
+    /* ── Setup Banner ─────────────────────────── */
+    showSetupBanner(show) {
+        const el = document.getElementById('setupBanner');
+        if (el) el.classList.toggle('hidden', !show);
+    },
+
+    /* ── Page Tabs ────────────────────────────── */
+    switchTab(tab) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        const page = document.getElementById(`page-${tab}`);
+        const btn = document.getElementById(`tab-${tab}`);
+        if (page) page.classList.add('active');
+        if (btn) btn.classList.add('active');
+    },
+
+    /* ── Theme Cycling ────────────────────────── */
+    getNextTheme(current) {
+        const order = ['light', 'dark', 'joan'];
+        const idx = order.indexOf(current);
+        return order[(idx + 1) % order.length];
+    },
+
+    themeEmoji(theme) {
+        return { light: '☀️', dark: '🌙', joan: '⬛' }[theme] || '☀️';
+    },
+
+    /* ── Settings Sidebar ─────────────────────── */
+    toggleSidebar(show) {
+        const el = document.getElementById('settingsSidebar');
+        if (el) el.classList.toggle('hidden', !show);
+    },
+
+    updateThemeSelection(activeTheme) {
+        document.querySelectorAll('.theme-option').forEach(btn => {
+            const isMatch = btn.dataset.themeVal === activeTheme;
+            btn.classList.toggle('active', isMatch);
+        });
+    },
+
+    /* ── Timer Card State ─────────────────────── */
+    setTimerState(state) {
+        const card = document.getElementById('trackerCard');
+        if (!card) return;
+        card.className = 'tracker-card card';
+        if (state === 'running') card.classList.add('running');
+        if (state === 'paused') card.classList.add('paused');
+
+        const clockEl = document.getElementById('timerClock');
+        if (clockEl) {
+            clockEl.className = `timer-clock ${state === 'running' ? 'running' : state === 'paused' ? 'paused' : ''}`;
+        }
+        const displayEl = document.getElementById('timerDisplay');
+        if (displayEl) {
+            displayEl.className = `timer-display ${state === 'paused' ? 'paused' : ''}`;
+        }
+    },
+
+    /* ── Button Visibility ────────────────────── */
+    updateTimerButtons(state) {
+        const startBtn = document.getElementById('btnStart');
+        const pauseBtn = document.getElementById('btnPause');
+        const resumeBtn = document.getElementById('btnResume');
+        const saveBtn = document.getElementById('btnSaveManual');
+
+        if (!startBtn || !saveBtn) return;
+
+        // Idle: [Start, Save]
+        startBtn.style.display = state === 'idle' ? '' : 'none';
+        saveBtn.style.display = (state === 'idle' || state === 'paused') ? '' : 'none';
+
+        // Running: [Pause]
+        pauseBtn.style.display = state === 'running' ? '' : 'none';
+
+        // Paused: [Resume, Save]
+        resumeBtn.style.display = state === 'paused' ? '' : 'none';
+    },
+
+    /* ── Combobox ─────────────────────────────── */
+    openCombobox(inputOrId, options, onSelect) {
+        const input = (typeof inputOrId === 'string') ? document.getElementById(inputOrId) : inputOrId;
+        if (!input) return;
+
+        const wrap = input.closest('.combobox-wrap');
+        let dd = wrap.querySelector('.combobox-dropdown');
+        if (!dd) {
+            dd = document.createElement('div');
+            dd.className = 'combobox-dropdown';
+            wrap.appendChild(dd);
+        }
+
+        const query = input.value.toLowerCase();
+        const filtered = options.filter(o => o.toLowerCase().includes(query));
+
+        dd.innerHTML = '';
+        if (query && !options.map(o => o.toLowerCase()).includes(query)) {
+            const newOpt = document.createElement('div');
+            newOpt.className = 'combobox-option new-entry';
+            newOpt.innerHTML = `<span class="combobox-option-icon">✚</span> Add "${input.value}"`;
+            newOpt.onmousedown = (e) => { e.preventDefault(); onSelect(input.value); this.closeCombobox(dd); };
+            dd.appendChild(newOpt);
+        }
+        filtered.forEach(o => {
+            const opt = document.createElement('div');
+            opt.className = 'combobox-option';
+            opt.innerHTML = `<span class="combobox-option-icon">◈</span> ${o}`;
+            opt.onmousedown = (e) => { e.preventDefault(); onSelect(o); this.closeCombobox(dd); };
+            dd.appendChild(opt);
+        });
+
+        if (dd.children.length === 0) {
+            dd.innerHTML = '<div class="combobox-option" style="color:var(--text-muted);pointer-events:none;">No options</div>';
+        }
+
+        dd.classList.add('open');
+
+        // Close on outside click
+        const close = (e) => {
+            if (!wrap.contains(e.target)) {
+                this.closeCombobox(dd);
+                document.removeEventListener('mousedown', close);
+            }
+        };
+        setTimeout(() => document.addEventListener('mousedown', close), 50);
+    },
+
+    closeCombobox(dd) {
+        if (dd) dd.classList.remove('open');
+    },
+
+    closeAllComboboxes() {
+        document.querySelectorAll('.combobox-dropdown.open').forEach(d => d.classList.remove('open'));
+    },
+
+    /* ── Aquarium Floating Elements ───────────── */
+    createFloatingElements(containerId, count) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = ''; // Clear existing
+
+        for (let i = 0; i < count; i++) {
+            const fish = document.createElement('div');
+            fish.className = 'fish-element';
+
+            const rand = Math.random();
+            // Small fish are defined as roughly 30% of the population (0.5 mean - 0.2 units)
+            if (rand < 0.3) {
+                fish.classList.add('small');
+                // 50% chance of blur for smallest fish
+                if (Math.random() < 0.5) {
+                    fish.style.setProperty('--blur', '1.5px');
+                }
+            } else if (rand > 0.85) {
+                fish.classList.add('featured');
+            }
+
+            // Randomize timing and paths
+            const paths = ['swim-path-a', 'swim-path-b', 'swim-path-c', 'swim-path-d'];
+            let path = paths[Math.floor(Math.random() * paths.length)];
+
+            // Constrain small fish to the left third as requested
+            if (fish.classList.contains('small')) {
+                path = 'swim-path-left-third';
+            }
+
+            const duration = Math.random() * 60 + 100; // 50s - 90s
+            const delay = Math.random() * -100;    // start at random offset
+            const top = Math.random() * 80 + 10; // 10% - 90% vertical start
+
+            fish.style.top = `${top}%`;
+            fish.style.animation = `${path} ${duration}s ease-in-out ${delay}s infinite`;
+
+            // Randomize hue with 20% probability
+            if (Math.random() < 0.2) {
+                const hueRotate = Math.floor(Math.random() * 360);
+                fish.style.setProperty('--hue', `${hueRotate}deg`);
+            }
+
+            container.appendChild(fish);
+        }
+    }
+};

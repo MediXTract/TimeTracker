@@ -1,0 +1,115 @@
+/* MediXtract TimeTracker - Design Tokens */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Brand Colors */
+    --color-primary: #1D6491;
+    --color-accent: #4361EE;
+    --color-purple: #3B1AAF;
+    --color-purple-soft: #A593E0;
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-danger: #EF4444;
+    --color-pause: #F59E0B;
+    --color-running: #10B981;
+
+    /* Backgrounds */
+    --bg-app: #f0f4f8;
+    --bg-card: #ffffff;
+    --bg-header: #ffffff;
+    --bg-input: #f8fafc;
+    --bg-hover: #f1f5f9;
+    --bg-table-header: #f1f5f9;
+    --bg-table-row: #ffffff;
+    --bg-table-alt: #f8fafc;
+
+    /* Text */
+    --text-primary: #112B3C;
+    --text-secondary: #3A506B;
+    --text-muted: #64748B;
+    --text-inverted: #ffffff;
+
+    /* Borders */
+    --border-color: #e2e8f0;
+    --border-focus: var(--color-primary);
+
+    /* Timer */
+    --timer-bg: #0f172a;
+    --timer-text: #ffffff;
+    --timer-glow: rgba(67, 97, 238, 0.4);
+
+    /* Spacing */
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(17, 43, 60, 0.06);
+    --shadow: 0 4px 12px rgba(17, 43, 60, 0.08);
+    --shadow-lg: 0 10px 30px rgba(17, 43, 60, 0.12);
+    --shadow-xl: 0 20px 50px rgba(17, 43, 60, 0.15);
+
+    /* Transitions */
+    --transition: 0.2s ease;
+    --transition-slow: 0.35s ease;
+
+    /* Font */
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    --color-scheme: light;
+}
+
+/* ── Dark Theme ─────────────────────────────── */
+[data-theme="dark"] {
+    --bg-app: #0a0f1a;
+    --bg-card: #111827;
+    --bg-header: #0f172a;
+    --bg-input: #1e293b;
+    --bg-hover: #1e293b;
+    --bg-table-header: #1e293b;
+    --bg-table-row: #111827;
+    --bg-table-alt: #0f172a;
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+
+    --border-color: #1e293b;
+    --color-primary: #4A9EFF;
+    --color-accent: #6B73FF;
+
+    --timer-bg: #000000;
+    --timer-glow: rgba(107, 115, 255, 0.5);
+
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+    --shadow: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+    --color-scheme: dark;
+}
+
+/* ── Joan (Ultra-Dark) Theme ─────────────────── */
+[data-theme="joan"] {
+    --bg-app: #000000;
+    --bg-card: #0a0a0a;
+    --bg-header: #000000;
+    --bg-input: #111111;
+    --bg-hover: #111111;
+    --bg-table-header: #111111;
+    --bg-table-row: #0a0a0a;
+    --bg-table-alt: #050505;
+
+    --text-primary: #eeeeee;
+    --text-secondary: #cccccc;
+    --text-muted: #666666;
+
+    --border-color: #222222;
+    --color-primary: #6B7FFF;
+    --color-accent: #8B8BFF;
+
+    --timer-bg: #000000;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.6);
+    --shadow: 0 4px 12px rgba(0,0,0,0.8);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.9);
+    --color-scheme: dark;
+}

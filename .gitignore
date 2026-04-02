@@ -1,0 +1,16 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+
+# Data files (Synced via Google Drive)
+assets/documents/main.json
+main_TT/
+security_copies_TT/
+
+# Local shortcuts
+*.lnk
+TimeTracker.lnk
+
+# Documents directory
+assets/documents/

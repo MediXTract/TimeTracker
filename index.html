@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="MediXtract TimeTracker — Professional time-tracking for MediXtract projects. Check-in/check-out workflow with Google Drive sync." />
+    <title>MediXtract TimeTracker</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/logos/clock-purple.png" />
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/variables.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/app.css" />
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════════════ -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <!-- ══════════════════════════════════════════
+     CONFIRM MODAL
+══════════════════════════════════════════ -->
+    <div id="confirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+        <div class="modal-box">
+            <h3 id="confirmTitle">Confirm</h3>
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="confirmCancel" class="btn btn-ghost">Cancel</button>
+                <button id="confirmOk" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════ -->
+    <div class="app-wrapper">
+
+        <!-- ── HEADER ────────────────────────────── -->
+        <header class="app-header" role="banner">
+            <div class="header-inner">
+
+                <!-- Brand -->
+                <div class="header-brand">
+                    <div class="header-logo" aria-hidden="true">
+                    <img src="assets/images/logos/LOGO_TimeTracker_Circular.png" alt="TimeTracker Logo" style="width:100%; height:auto;" />
+                </div>
+                    <div>
+                        <div class="header-title">MediXtract TimeTracker</div>
+                        <div class="header-subtitle">Work Session Logger</div>
+                    </div>
+                </div>
+
+                <!-- Nav Tabs -->
+                <nav class="header-nav" role="navigation" aria-label="Main navigation">
+                    <button id="tab-tracker" class="nav-tab active" aria-controls="page-tracker">
+                        <span aria-hidden="true">⏺</span> Tracker
+                    </button>
+                    <button id="tab-history" class="nav-tab" aria-controls="page-history">
+                        <span aria-hidden="true">📊</span> History
+                    </button>
+                </nav>
+
+                <!-- Right actions -->
+                <div class="header-right">
+                    <!-- Running status pill -->
+                    <div id="headerStatus" class="header-status" aria-live="polite">
+                        <div class="status-dot" aria-hidden="true"></div>
+                        <span class="status-text">Idle</span>
+                    </div>
+
+                    <!-- Folder connect status -->
+                    <button id="folderStatus" class="folder-status" title="Connect Google Drive folder"
+                        aria-label="Connect folder">
+                        <span class="folder-status-icon" aria-hidden="true">📁</span>
+                        <span class="folder-status-text">Connect folder…</span>
+                    </button>
+
+                    <!-- Settings toggle -->
+                    <button id="btnSettings" class="btn-theme" title="Settings" aria-label="Settings">⚙️</button>
+
+                    <!-- Save Status -->
+                    <span id="saveStatus" class="save-status" aria-live="polite"></span>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- ── MAIN CONTENT ───────────────────────── -->
+        <main class="app-content">
+
+            <!-- ════════════════════════════════════
+             PAGE: TRACKER
+        ════════════════════════════════════ -->
+            <section id="page-tracker" class="page active" aria-label="Tracker">
+
+                <!-- Setup Banner (shown when no folder connected) -->
+                <div id="setupBanner" class="setup-banner" role="alert">
+                    <div class="setup-banner-icon" aria-hidden="true">📂</div>
+                    <div class="setup-banner-text">
+                        <h3>Connect Your Google Drive Folder</h3>
+                        <p>Select the <strong>TimeTracker</strong> folder on your local Google Drive to enable syncing.
+                            You can still track time without connecting.</p>
+                    </div>
+                    <button id="setupBannerBtn" class="btn btn-primary btn-sm">📁 Connect Folder</button>
+                </div>
+
+                <!-- ── Tracker Card ─────────────────── -->
+                <div id="trackerCard" class="tracker-card card" role="region" aria-label="Timer">
+
+                    <!-- LEFT SIDE: Timer + Controls -->
+                    <div class="tracker-side-left">
+                        <div id="timerDisplay" class="timer-display">
+                            <div id="timerClock" class="timer-clock" aria-live="polite" aria-label="Elapsed time">
+                                00:00:00</div>
+                            <div class="timer-paused-label" aria-hidden="true">⏸ PAUSED</div>
+                        </div>
+
+                        <div class="timer-controls" role="group" aria-label="Timer controls">
+                            <button id="btnStart" class="btn btn-timer btn-start" disabled aria-label="Start timer">▶
+                                Start</button>
+                            <button id="btnPause" class="btn btn-timer btn-pause" style="display:none"
+                                aria-label="Pause timer">⏸ Pause</button>
+                            <button id="btnResume" class="btn btn-timer btn-resume" style="display:none"
+                                aria-label="Resume timer">▶ Resume</button>
+                            <button id="btnSaveManual" class="btn btn-timer btn-log" aria-label="Save session">💾
+                                Save</button>
+                        </div>
+
+                        <div class="tracker-fields">
+
+                            <!-- Project Name (Full) -->
+                            <div class="field-group">
+                                <label for="inputProject">Project Name <span class="required">*</span></label>
+                                <div class="combobox-wrap">
+                                    <input id="inputProject" class="combobox-input" type="text"
+                                        placeholder="Select or type project…" autocomplete="off" aria-required="true" />
+                                    <span class="combobox-arrow" aria-hidden="true">▾</span>
+                                </div>
+                            </div>
+
+                            <!-- Task + Subtask (Split) -->
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label for="inputTaskType">Task Type</label>
+                                    <div class="combobox-wrap">
+                                        <input id="inputTaskType" class="combobox-input" type="text"
+                                            placeholder="Select task…" autocomplete="off" />
+                                        <span class="combobox-arrow" aria-hidden="true">▾</span>
+                                    </div>
+                                </div>
+                                <div class="field-group">
+                                    <label for="inputSubtaskType">Subtask Type</label>
+                                    <div class="combobox-wrap">
+                                        <input id="inputSubtaskType" class="combobox-input" type="text"
+                                            placeholder="Select subtask…" autocomplete="off" />
+                                        <span class="combobox-arrow" aria-hidden="true">▾</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Date + Start (Split) -->
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label for="trackerDate">Date</label>
+                                    <input id="trackerDate" type="date" placeholder="YYYY-MM-DD" aria-label="Date" />
+                                </div>
+                                <div class="field-group">
+                                    <label for="trackerStartTime">Start Time</label>
+                                    <input id="trackerStartTime" type="time" step="1" placeholder="--:--:--"
+                                        aria-label="Start time" />
+                                </div>
+                            </div>
+
+                            <!-- End + Pause (Split) -->
+                            <div class="field-row">
+                                <div class="field-group">
+                                    <label for="trackerEndTime">End Time</label>
+                                    <input id="trackerEndTime" type="time" step="1" placeholder="--:--:--"
+                                        aria-label="End time" />
+                                </div>
+                                <div class="field-group">
+                                    <label for="trackerPausedTime">Paused Time</label>
+                                    <input id="trackerPausedTime" type="time" step="1" placeholder="--:--:--"
+                                        aria-label="Paused time" />
+                                </div>
+                            </div>
+
+                            <!-- Time Validation Warning -->
+                            <div id="timeError" class="validation-error hidden">
+                                ⚠️ Finish time must be later than start time.
+                            </div>
+
+                            <!-- Description (Full) -->
+                            <div class="field-group">
+                                <label for="inputDescription">Description</label>
+                                <textarea id="inputDescription" rows="2"
+                                    placeholder="Brief summary of work…"></textarea>
+                            </div>
+
+                            <!-- Notes (Full) -->
+                            <div class="field-group">
+                                <label for="inputNotes">Notes</label>
+                                <textarea id="inputNotes" rows="2"
+                                    placeholder="Detailed comments, task links…"></textarea>
+                            </div>
+
+                        </div>
+                        <!-- /tracker-fields -->
+                    </div>
+
+                    <!-- RIGHT SIDE: Empty Space for Background -->
+                    <div class="tracker-side-right"></div>
+                    <!-- /tracker-side-right -->
+
+                    <div id="aquarium-elements" class="aquarium-elements"></div>
+                </div>
+                <!-- /tracker-card -->
+
+                <!-- ── Recent Sessions Table ─────────── -->
+                <div class="sessions-card card">
+                    <div class="sessions-header">
+                        <div class="sessions-title">
+                            <span aria-hidden="true">📋</span>
+                            Recent Sessions
+                            <span id="sessionCount" class="session-count-badge" aria-live="polite">0</span>
+                        </div>
+                        <div class="sessions-actions">
+                            <span style="font-size:0.72rem;color:var(--text-muted);">Click a cell to edit</span>
+                        </div>
+                    </div>
+
+                    <div class="sessions-table-wrap" role="region" aria-label="Recent sessions table">
+                        <table class="sessions-table" aria-label="Recent work sessions">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>User</th>
+                                    <th>Date</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Paused</th>
+                                    <th>Duration</th>
+                                    <th>Description</th>
+                                    <th>Task</th>
+                                    <th>Subtask</th>
+                                    <th style="text-align:center;width:40px;">✕</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessionsBody"></tbody>
+                        </table>
+                        <div id="sessionsEmpty" class="table-empty">
+                            <div class="table-empty-icon" aria-hidden="true">📭</div>
+                            <div class="table-empty-text">No sessions yet. Start tracking to see records here.</div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+            <!-- /page-tracker -->
+
+            <!-- ════════════════════════════════════
+             PAGE: HISTORY
+        ════════════════════════════════════ -->
+            <section id="page-history" class="page" aria-label="History">
+
+                <!-- Stats Row -->
+                <div class="stats-row" role="region" aria-label="Summary statistics">
+                    <div class="stat-card stat-blue">
+                        <div class="stat-label">Total Time</div>
+                        <div id="statTotalTime" class="stat-value">—</div>
+                        <div class="stat-sub">In filtered view</div>
+                    </div>
+                    <div class="stat-card stat-green">
+                        <div class="stat-label">Sessions</div>
+                        <div id="statSessions" class="stat-value">—</div>
+                        <div class="stat-sub">Work entries</div>
+                    </div>
+                    <div class="stat-card stat-yellow">
+                        <div class="stat-label">Avg Session</div>
+                        <div id="statAvgSession" class="stat-value">—</div>
+                        <div class="stat-sub">Per entry</div>
+                    </div>
+                    <div class="stat-card stat-purple">
+                        <div class="stat-label">Top Project</div>
+                        <div id="statTopProject" class="stat-value" style="font-size:1rem;font-family:var(--font);">—
+                        </div>
+                        <div class="stat-sub">Most hours</div>
+                    </div>
+                </div>
+
+                <!-- Filters Card -->
+                <div class="history-filters-card card">
+                    <div class="history-filters-title">
+                        <span aria-hidden="true">🔍</span> Filter History
+                    </div>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="filterDateFrom">From Date</label>
+                            <input id="filterDateFrom" type="date" aria-label="From date" />
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterDateTo">To Date</label>
+                            <input id="filterDateTo" type="date" aria-label="To date" />
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterProject">Project</label>
+                            <select id="filterProject" aria-label="Filter by project">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterUser">User</label>
+                            <select id="filterUser" aria-label="Filter by user">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterTaskType">Task Type</label>
+                            <select id="filterTaskType" aria-label="Filter by task type">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterSubtaskType">Subtask Type</label>
+                            <select id="filterSubtaskType" aria-label="Filter by subtask type">
+                                <option value="">All</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-actions" style="margin-top:0.85rem;">
+                        <button id="btnApplyFilters" class="btn btn-primary btn-sm">
+                            <span aria-hidden="true">🔍</span> Apply Filters
+                        </button>
+                        <button id="btnClearFilters" class="btn btn-ghost btn-sm">
+                            <span aria-hidden="true">✕</span> Clear
+                        </button>
+                        <div style="flex:1;"></div>
+                        <span id="historyCount" class="text-muted text-sm" aria-live="polite">0 records</span>
+                        <button id="btnExportCsv" class="btn btn-secondary btn-sm"
+                            aria-label="Export filtered data as CSV">
+                            <span aria-hidden="true">⬇</span> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- History Table -->
+                <div class="sessions-card card">
+                    <div class="sessions-table-wrap" role="region" aria-label="History table">
+                        <table class="sessions-table" aria-label="Work session history">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Project</th>
+                                    <th>User</th>
+                                    <th>Start</th>
+                                    <th>End</th>
+                                    <th>Paused</th>
+                                    <th>Duration</th>
+                                    <th>Description</th>
+                                    <th>Task</th>
+                                    <th>Subtask</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody"></tbody>
+                        </table>
+                        <div id="historyEmpty" class="table-empty">
+                            <div class="table-empty-icon" aria-hidden="true">📊</div>
+                            <div class="table-empty-text">No records match the current filters.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+            <!-- /page-history -->
+
+        </main><!-- /app-content -->
+
+    </div><!-- /app-wrapper -->
+
+    <!-- ══════════════════════════════════════════
+     SETTINGS SIDEBAR
+     ══════════════════════════════════════════ -->
+    <div id="settingsSidebar" class="sidebar-overlay hidden" role="dialog" aria-modal="true"
+        aria-labelledby="settingsTitle">
+        <div class="sidebar-panel">
+            <div class="sidebar-header">
+                <h3 id="settingsTitle">Settings</h3>
+                <button id="btnCloseSettings" class="btn-close" aria-label="Close settings">✕</button>
+            </div>
+            <div class="sidebar-body">
+
+                <!-- Default User -->
+                <div class="field-group mb-lg">
+                    <label for="inputSettingsUser">Default User Name</label>
+                    <div class="setting-input-wrap">
+                        <input id="inputSettingsUser" type="text" placeholder="Your name…" />
+                    </div>
+                    <p class="setting-help">This will automatically fill the User Name field in the tracker.</p>
+                </div>
+
+                <!-- Theme Selector -->
+                <div class="field-group">
+                    <label>Website Style</label>
+                    <div class="theme-selector">
+                        <button class="theme-option" data-theme-val="light" title="Light Mode">
+                            <span class="theme-icon">☀️</span> Light
+                        </button>
+                        <button class="theme-option" data-theme-val="dark" title="Dark Mode">
+                            <span class="theme-icon">🌙</span> Dark
+                        </button>
+                        <button class="theme-option" data-theme-val="joan" title="Joan Mode">
+                            <span class="theme-icon">⬛</span> Joan
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="sidebar-footer">
+                <p class="text-xs text-muted">MediXtract TimeTracker v1.0.0</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
