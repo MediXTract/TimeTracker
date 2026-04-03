@@ -1,0 +1,89 @@
+/* Aquarium Elements & Animations */
+.aquarium-elements {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.fish-element {
+    position: absolute;
+    width: calc(85px * var(--scale, 1));
+    height: calc(60px * var(--scale, 1));
+    background-image: url('../../assets/images/objects/zebra_fish-colored.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    will-change: transform, opacity;
+    opacity: 0.8;
+    filter: hue-rotate(var(--hue, 0deg));
+    transition: width 0.3s ease, height 0.3s ease;
+}
+
+.fish-element.featured {
+    width: calc(115px * var(--scale, 1));
+    height: calc(80px * var(--scale, 1));
+    filter: hue-rotate(var(--hue, 0deg)) drop-shadow(0 0 12px rgba(67, 97, 238, 0.4));
+    opacity: 1;
+}
+
+.fish-element.small {
+    width: calc(35px * var(--scale, 1));
+    height: calc(25px * var(--scale, 1));
+    opacity: 0.6;
+    filter: hue-rotate(var(--hue, 0deg)) blur(var(--blur, 0px));
+}
+
+@keyframes swim-path-a {
+    0%   { transform: translate(-150px, 0) scaleX(1) rotate(2deg); }
+    30%  { transform: translate(500px, 15px) scaleX(1) rotate(-1deg); }
+    32%  { transform: translate(500px, 15px) scaleX(-1) rotate(-1deg); }
+    45%  { transform: translate(250px, 25px) scaleX(-1) rotate(1deg); }
+    47%  { transform: translate(250px, 25px) scaleX(1) rotate(2deg); }
+    75%  { transform: translate(1100px, 10px) scaleX(1) rotate(-2deg); }
+    78%  { transform: translate(1100px, 10px) scaleX(-1) rotate(-3deg); }
+    100% { transform: translate(-150px, 0) scaleX(-1) rotate(1deg); }
+}
+
+@keyframes swim-path-b {
+    0%   { transform: translate(1300px, 10px) scaleX(-1) rotate(-2deg); }
+    20%  { transform: translate(800px, 20px) scaleX(-1) rotate(1deg); }
+    22%  { transform: translate(800px, 20px) scaleX(1) rotate(1deg); }
+    50%  { transform: translate(1100px, -20px) scaleX(1) rotate(2deg); }
+    53%  { transform: translate(1100px, -20px) scaleX(-1) rotate(2deg); }
+    85%  { transform: translate(-50px, 35px) scaleX(-1) rotate(-1deg); }
+    88%  { transform: translate(-50px, 35px) scaleX(1) rotate(-1deg); }
+    100% { transform: translate(1300px, 10px) scaleX(1) rotate(-1deg); }
+}
+
+@keyframes swim-path-c {
+    0%   { transform: translate(-100px, 20px) scaleX(1) rotate(5deg); }
+    15%  { transform: translate(200px, 10px) scaleX(1) rotate(-2deg); }
+    17%  { transform: translate(200px, 10px) scaleX(-1) rotate(-2deg); }
+    25%  { transform: translate(50px, 30px) scaleX(-1) rotate(1deg); }
+    28%  { transform: translate(50px, 30px) scaleX(1) rotate(3deg); }
+    60%  { transform: translate(900px, 15px) scaleX(1) rotate(-2deg); }
+    63%  { transform: translate(900px, 15px) scaleX(-1) rotate(-4deg); }
+    100% { transform: translate(-100px, 20px) scaleX(-1) rotate(5deg); }
+}
+
+@keyframes swim-path-d {
+    0%   { transform: translate(600px, 30px) scaleX(1) rotate(2deg); }
+    10%  { transform: translate(750px, 15px) scaleX(1) rotate(-1deg); }
+    12%  { transform: translate(750px, 15px) scaleX(-1) rotate(-2deg); }
+    30%  { transform: translate(400px, 45px) scaleX(-1) rotate(1deg); }
+    33%  { transform: translate(400px, 45px) scaleX(1) rotate(3deg); }
+    100% { transform: translate(600px, 30px) scaleX(1) rotate(2deg); }
+}
+
+@keyframes swim-path-left-third {
+    0%   { transform: translate(-100px, 20px) scaleX(1) rotate(5deg); }
+    15%  { transform: translate(150px, 10px) scaleX(1) rotate(-2deg); }
+    17%  { transform: translate(150px, 10px) scaleX(-1) rotate(-2deg); }
+    40%  { transform: translate(-50px, 30px) scaleX(-1) rotate(1deg); }
+    43%  { transform: translate(-50px, 30px) scaleX(1) rotate(3deg); }
+    60%  { transform: translate(300px, 15px) scaleX(1) rotate(-2deg); }
+    63%  { transform: translate(300px, 15px) scaleX(-1) rotate(-4deg); }
+    100% { transform: translate(-100px, 20px) scaleX(-1) rotate(5deg); }
+}

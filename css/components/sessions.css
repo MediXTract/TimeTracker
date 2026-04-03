@@ -1,0 +1,166 @@
+/* Recent Sessions Table */
+.sessions-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+.sessions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-table-header);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.sessions-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.session-count-badge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.5rem;
+    border-radius: 99px;
+    background: var(--color-primary);
+    color: white;
+    min-width: 20px;
+    text-align: center;
+}
+.sessions-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sessions-table-wrap {
+    overflow-x: auto;
+    max-height: 440px;
+    overflow-y: auto;
+}
+.sessions-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    font-size: 0.78rem;
+    table-layout: fixed;
+}
+.sessions-table thead th {
+    padding: 0.6rem 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--bg-table-header);
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.sessions-table tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background var(--transition);
+}
+.sessions-table tbody tr:nth-child(even) { background: var(--bg-table-alt); }
+.sessions-table tbody tr:hover { background: var(--bg-hover); }
+.sessions-table tbody tr.editing { background: rgba(67,97,238,0.05); outline: 2px solid rgba(67,97,238,0.2); }
+.sessions-table td {
+    padding: 0.5rem 0.75rem;
+    vertical-align: middle;
+    color: var(--text-primary);
+    position: relative;
+}
+.cell-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    display: block;
+}
+.sessions-table td.editable { cursor: pointer; }
+.sessions-table td.editable:hover { background: rgba(67,97,238,0.05); }
+
+/* Table Column Widths for Stability */
+.sessions-table th:nth-child(1) { width: 14%; }
+.sessions-table th:nth-child(2) { width: 10%; }
+.sessions-table th:nth-child(3) { width: 85px; }
+.sessions-table th:nth-child(4) { width: 75px; }
+.sessions-table th:nth-child(5) { width: 75px; }
+.sessions-table th:nth-child(6) { width: 75px; }
+.sessions-table th:nth-child(7) { width: 75px; }
+.sessions-table th:nth-child(8) { width: 20%; }
+.sessions-table th:nth-child(9) { width: 12%; }
+.sessions-table th:nth-child(10) { width: 12%; }
+.sessions-table th:nth-child(11) { width: 50px; }
+
+.cell-edit-input {
+    font-size: 0.78rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--color-primary);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    width: 100%;
+    min-width: 0;
+    box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+    display: block;
+}
+.cell-edit-select {
+    font-size: 0.78rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--color-primary);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    width: 100%;
+    min-width: 0;
+    box-shadow: 0 0 0 3px rgba(67,97,238,0.1);
+}
+
+.duration-cell {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--color-primary);
+}
+
+.table-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+    gap: 0.75rem;
+}
+.table-empty-icon { font-size: 2.5rem; opacity: 0.4; }
+.table-empty-text { font-size: 0.85rem; color: var(--text-muted); }
+
+.btn-row-delete {
+    width: 24px; height: 24px;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    transition: all var(--transition);
+    padding: 0;
+}
+.btn-row-delete:hover {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.3);
+    color: var(--color-danger);
+}
