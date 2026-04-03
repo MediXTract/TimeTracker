@@ -220,12 +220,14 @@ const TTUI = {
             fish.className = 'fish-element';
 
             const rand = Math.random();
+            let isBlurred = false;
             // Small fish are defined as roughly 30% of the population (0.5 mean - 0.2 units)
             if (rand < 0.3) {
                 fish.classList.add('small');
                 // 50% chance of blur for smallest fish
                 if (Math.random() < 0.5) {
                     fish.style.setProperty('--blur', '1.5px');
+                    isBlurred = true;
                 }
             } else if (rand > 0.85) {
                 fish.classList.add('featured');
@@ -235,17 +237,21 @@ const TTUI = {
             const paths = ['swim-path-a', 'swim-path-b', 'swim-path-c', 'swim-path-d'];
             let path = paths[Math.floor(Math.random() * paths.length)];
 
-            // Constrain small fish to the left third as requested
-            if (fish.classList.contains('small')) {
+            // Constrain blurred small fish to the left third as requested
+            if (isBlurred) {
                 path = 'swim-path-left-third';
             }
 
             const duration = Math.random() * 60 + 100; // 50s - 90s
             const delay = Math.random() * -100;    // start at random offset
-            const top = Math.random() * 80 + 10; // 10% - 90% vertical start
+            const top = Math.random() * 50 + 15; // 15% - 65% vertical start to avoid clipping margins
 
             fish.style.top = `${top}%`;
             fish.style.animation = `${path} ${duration}s ease-in-out ${delay}s infinite`;
+
+            // Randomize size factor (0.8x to 1.3x)
+            const scale = Math.random() * 0.5 + 0.8;
+            fish.style.setProperty('--scale', scale);
 
             // Randomize hue with 20% probability
             if (Math.random() < 0.2) {

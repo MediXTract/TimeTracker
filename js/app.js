@@ -580,8 +580,8 @@ class TimeTracker {
 
     _sessionRow(s) {
         const fields = [
-            { field: 'projectName', val: s.projectName },
-            { field: 'userName',    val: s.userName },
+            { field: 'projectName', val: s.projectName, type: 'project-select' },
+            { field: 'userName',    val: s.userName,    type: 'user-select' },
             { field: 'date',        val: s.date },
             { field: 'startTime',   val: s.startTime },
             { field: 'endTime',     val: s.endTime },
@@ -633,7 +633,9 @@ class TimeTracker {
 
         let editor;
 
-        if (type === 'task-select' || type === 'subtask-select') {
+        const isCombobox = ['task-select', 'subtask-select', 'project-select', 'user-select'].includes(type);
+
+        if (isCombobox) {
             const wrap = document.createElement('div');
             wrap.className = 'combobox-wrap';
             editor = document.createElement('input');
@@ -646,9 +648,11 @@ class TimeTracker {
             cell.appendChild(wrap);
             editor.focus();
 
-            const options = (type === 'task-select') 
-                ? this.knownTaskTypes 
-                : this.knownSubtaskTypes(session.taskType);
+            let options = [];
+            if (type === 'task-select') options = this.knownTaskTypes;
+            else if (type === 'subtask-select') options = this.knownSubtaskTypes(session.taskType);
+            else if (type === 'project-select') options = this.knownProjects;
+            else if (type === 'user-select') options = this.knownUsers;
             
             const trigger = (e) => {
                 TTUI.openCombobox(editor, options, (val) => {
@@ -907,7 +911,7 @@ class TimeTracker {
        COMBOBOXES (Project, User, Task, Subtask)
     ════════════════════════════════════════════ */
     _initComboboxes() {
-        const ids = ['inputProject', 'inputUser', 'inputTaskType', 'inputSubtaskType'];
+        const ids = ['inputProject', 'inputSettingsUser', 'inputTaskType', 'inputSubtaskType'];
         
         ids.forEach(id => {
             const input = document.getElementById(id);
@@ -916,7 +920,7 @@ class TimeTracker {
             const trigger = (e) => {
                 let options = [];
                 if (id === 'inputProject')     options = this.knownProjects;
-                else if (id === 'inputUser')   options = this.knownUsers;
+                else if (id === 'inputSettingsUser')   options = this.knownUsers;
                 else if (id === 'inputTaskType') options = this.knownTaskTypes;
                 else if (id === 'inputSubtaskType') {
                     const taskType = document.getElementById('inputTaskType')?.value || '';
