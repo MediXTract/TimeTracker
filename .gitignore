@@ -13,4 +13,5 @@ security_copies_TT/
 TimeTracker.lnk
 
 # Documents directory
-assets/documents/
+assets/documents/*
+!assets/documents/create_shortcut.bat
