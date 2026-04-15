@@ -48,9 +48,9 @@
 .sessions-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 900px;
+    min-width: 1000px;
     font-size: 0.78rem;
-    table-layout: fixed;
+    table-layout: auto;
 }
 .sessions-table thead th {
     padding: 0.6rem 0.75rem;
@@ -81,27 +81,36 @@
     position: relative;
 }
 .cell-content {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     width: 100%;
     display: block;
+    line-height: 1.4;
+}
+.sessions-table td:not([data-edit-field="description"]):not([data-edit-field="notes"]):not([data-field="description"]):not([data-field="notes"]) .cell-content {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Specifically for description and notes to allow wrapping */
+.sessions-table td[data-edit-field="description"] .cell-content,
+.sessions-table td[data-field="description"] .cell-content,
+.sessions-table td[data-edit-field="notes"] .cell-content,
+.sessions-table td[data-field="notes"] .cell-content {
+    white-space: normal;
+    word-break: break-word;
+    min-width: 200px;
+    max-width: 450px;
 }
 .sessions-table td.editable { cursor: pointer; }
 .sessions-table td.editable:hover { background: rgba(67,97,238,0.05); }
 
-/* Table Column Widths for Stability */
-.sessions-table th:nth-child(1) { width: 14%; }
-.sessions-table th:nth-child(2) { width: 10%; }
-.sessions-table th:nth-child(3) { width: 85px; }
-.sessions-table th:nth-child(4) { width: 75px; }
-.sessions-table th:nth-child(5) { width: 75px; }
-.sessions-table th:nth-child(6) { width: 75px; }
-.sessions-table th:nth-child(7) { width: 75px; }
-.sessions-table th:nth-child(8) { width: 20%; }
-.sessions-table th:nth-child(9) { width: 12%; }
-.sessions-table th:nth-child(10) { width: 12%; }
-.sessions-table th:nth-child(11) { width: 50px; }
+/* Table column sizing */
+.sessions-table th {
+    width: auto;
+}
+/* Delete column */
+.sessions-table th:last-child {
+    width: 45px;
+}
 
 .cell-edit-input {
     font-size: 0.78rem;

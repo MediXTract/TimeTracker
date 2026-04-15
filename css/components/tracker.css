@@ -131,6 +131,48 @@
 .btn-log    { background: linear-gradient(135deg, var(--color-accent), #4361ee); color: white; box-shadow: 0 3px 12px rgba(67,97,238,0.3); }
 .btn-log:hover    { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(67,97,238,0.4); }
 
+.collab-control {
+    margin-top: 1.25rem;
+    display: flex;
+    justify-content: stretch;
+}
+.btn-collab {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.75rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    opacity: 0.5;
+}
+.btn-collab:hover {
+    background: rgba(255, 255, 255, 0.06);
+    opacity: 0.8;
+    transform: translateY(-1px);
+}
+.btn-collab.active {
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+    opacity: 1;
+}
+.collab-icon {
+    font-size: 1rem;
+    transition: transform var(--transition);
+}
+.btn-collab.active .collab-icon {
+    transform: scale(1.1);
+}
+
 .tracker-fields {
     display: flex;
     flex-direction: column;
@@ -221,3 +263,46 @@
 .combobox-option:hover { background: var(--bg-hover); }
 .combobox-option.new-entry { color: var(--color-accent); font-weight: 600; }
 .combobox-option-icon { font-size: 0.75rem; color: var(--text-muted); }
+
+/* Time Picker Specialized Styles */
+.time-picker-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    width: 140px;
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-color);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    display: none;
+    overflow: hidden;
+}
+.time-picker-dropdown.open { display: block; animation: scaleIn 0.15s ease; }
+
+.time-picker-columns {
+    display: flex;
+    height: 200px;
+}
+.time-column {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.25rem;
+    scrollbar-width: thin;
+}
+.hours-col { border-right: 1px solid var(--border-color); }
+
+.time-opt {
+    padding: 0.4rem;
+    text-align: center;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+.time-opt:hover { background: var(--bg-hover); }
+.time-opt.active {
+    background: var(--color-accent);
+    color: white;
+    font-weight: 600;
+}

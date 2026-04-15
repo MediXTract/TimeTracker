@@ -141,6 +141,13 @@
                             <button id="btnSaveManual" class="btn btn-timer btn-log" aria-label="Save session">💾
                                 Save</button>
                         </div>
+                        
+                        <!-- Collaborative Toggle -->
+                        <div class="collab-control">
+                            <button id="btnCollab" class="btn btn-collab" aria-label="Toggle Collaborative Work">
+                                <span class="collab-icon">👥</span> Collaborative Work
+                            </button>
+                        </div>
 
                         <div class="tracker-fields">
 
@@ -174,30 +181,45 @@
                                 </div>
                             </div>
 
-                            <!-- Date + Start (Split) -->
+                            <!-- Start Date + Time -->
                             <div class="field-row">
                                 <div class="field-group">
-                                    <label for="trackerDate">Date</label>
-                                    <input id="trackerDate" type="date" placeholder="YYYY-MM-DD" aria-label="Date" />
+                                    <label for="trackerStartDate">Start Date</label>
+                                    <input id="trackerStartDate" type="date" placeholder="YYYY-MM-DD" aria-label="Start date" />
                                 </div>
                                 <div class="field-group">
                                     <label for="trackerStartTime">Start Time</label>
-                                    <input id="trackerStartTime" type="time" step="1" placeholder="--:--:--"
-                                        aria-label="Start time" />
+                                    <div class="combobox-wrap">
+                                        <input id="trackerStartTime" class="combobox-input" type="text" placeholder="--:--"
+                                            aria-label="Start time" readonly style="cursor:pointer;" />
+                                        <span class="combobox-arrow" aria-hidden="true">▾</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- End + Pause (Split) -->
+                            <!-- End Date + Time -->
                             <div class="field-row">
                                 <div class="field-group">
-                                    <label for="trackerEndTime">End Time</label>
-                                    <input id="trackerEndTime" type="time" step="1" placeholder="--:--:--"
-                                        aria-label="End time" />
+                                    <label for="trackerEndDate">End Date</label>
+                                    <input id="trackerEndDate" type="date" placeholder="YYYY-MM-DD" aria-label="End date" />
                                 </div>
                                 <div class="field-group">
-                                    <label for="trackerPausedTime">Paused Time</label>
-                                    <input id="trackerPausedTime" type="time" step="1" placeholder="--:--:--"
-                                        aria-label="Paused time" />
+                                    <label for="trackerEndTime">End Time</label>
+                                    <div class="combobox-wrap">
+                                        <input id="trackerEndTime" class="combobox-input" type="text" placeholder="--:--"
+                                            aria-label="End time" readonly style="cursor:pointer;" />
+                                        <span class="combobox-arrow" aria-hidden="true">▾</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Paused Time -->
+                            <div class="field-group">
+                                <label for="trackerPausedTime">Paused Time</label>
+                                <div class="combobox-wrap">
+                                    <input id="trackerPausedTime" class="combobox-input" type="text" placeholder="--:--"
+                                        aria-label="Paused time" readonly style="cursor:pointer;" />
+                                    <span class="combobox-arrow" aria-hidden="true">▾</span>
                                 </div>
                             </div>
 
@@ -251,9 +273,10 @@
                                 <tr>
                                     <th>Project</th>
                                     <th>User</th>
-                                    <th>Date</th>
-                                    <th>Start</th>
-                                    <th>End</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
                                     <th>Paused</th>
                                     <th>Duration</th>
                                     <th>Description</th>
@@ -366,11 +389,12 @@
                         <table class="sessions-table" aria-label="Work session history">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
                                     <th>Project</th>
                                     <th>User</th>
-                                    <th>Start</th>
-                                    <th>End</th>
+                                    <th>Start Time</th>
+                                    <th>End Time</th>
                                     <th>Paused</th>
                                     <th>Duration</th>
                                     <th>Description</th>
@@ -411,7 +435,7 @@
                 <div class="field-group mb-lg">
                     <label for="inputSettingsUser">Default User Name</label>
                     <div class="combobox-wrap">
-                        <input id="inputSettingsUser" class="combobox-input" type="text" placeholder="Your name…" autocomplete="off" />
+                        <input id="inputSettingsUser" class="combobox-input" type="text" placeholder="Your name…" autocomplete="off" readonly style="cursor:pointer;" />
                         <span class="combobox-arrow" aria-hidden="true">▾</span>
                     </div>
                     <p class="setting-help">This will automatically fill the User Name field in the tracker.</p>

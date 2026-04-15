@@ -11,10 +11,20 @@ Object.assign(TimeTracker.prototype, {
         const subtask  = document.getElementById('filterSubtaskType')?.value || '';
 
         return this.sessions.filter(s => {
-            if (dateFrom && s.date < dateFrom) return false;
-            if (dateTo   && s.date > dateTo)   return false;
+            if (dateFrom && s.startDate < dateFrom) return false;
+            if (dateTo   && s.startDate > dateTo)   return false;
             if (project  && s.projectName !== project) return false;
-            if (user     && s.userName    !== user)    return false;
+            
+            if (user) {
+                const names = ["Joan", "Tomas"];
+                if (names.includes(user)) {
+                    // Match if user is explicit OR if it's a collaborative session
+                    if (s.userName !== user && !s.isCollaborative) return false;
+                } else {
+                    if (s.userName !== user) return false;
+                }
+            }
+
             if (task     && s.taskType    !== task)    return false;
             if (subtask  && s.subtaskType !== subtask) return false;
             return true;
@@ -35,21 +45,22 @@ Object.assign(TimeTracker.prototype, {
         }
         if (empty) empty.style.display = 'none';
         const sorted = [...filtered].sort((a, b) =>
-            (b.date + b.startTime).localeCompare(a.date + a.startTime)
+            (b.startDate + b.startTime).localeCompare(a.startDate + a.startTime)
         );
         tbody.innerHTML = sorted.map(s => `
             <tr>
-                <td>${this._escHtml(s.date)}</td>
-                <td>${this._escHtml(s.projectName)}</td>
-                <td>${this._escHtml(s.userName)}</td>
-                <td>${this._escHtml(s.startTime)}</td>
-                <td>${this._escHtml(s.endTime)}</td>
-                <td>${this._escHtml(s.pausedTime)}</td>
-                <td class="duration-cell">${this._escHtml(s.duration)}</td>
-                <td>${this._escHtml(s.description)}</td>
-                <td>${this._escHtml(s.taskType)}</td>
-                <td>${this._escHtml(s.subtaskType)}</td>
-                <td class="truncate" style="max-width:200px;" title="${this._escHtml(s.notes)}">${this._escHtml(s.notes)}</td>
+                <td data-field="startDate"><div class="cell-content">${this._escHtml(s.startDate)}</div></td>
+                <td data-field="endDate"><div class="cell-content">${this._escHtml(s.endDate)}</div></td>
+                <td data-field="projectName"><div class="cell-content">${this._escHtml(s.projectName)}</div></td>
+                <td data-field="userName"><div class="cell-content">${s.isCollaborative ? 'Collaborative' : this._escHtml(s.userName)}</div></td>
+                <td data-field="startTime"><div class="cell-content">${this._escHtml(s.startTime)}</div></td>
+                <td data-field="endTime"><div class="cell-content">${this._escHtml(s.endTime)}</div></td>
+                <td data-field="pausedTime"><div class="cell-content">${this._escHtml(s.pausedTime)}</div></td>
+                <td class="duration-cell" data-field="duration"><div class="cell-content">${this._escHtml(s.duration)}</div></td>
+                <td data-field="description"><div class="cell-content">${this._escHtml(s.description)}</div></td>
+                <td data-field="taskType"><div class="cell-content">${this._escHtml(s.taskType)}</div></td>
+                <td data-field="subtaskType"><div class="cell-content">${this._escHtml(s.subtaskType)}</div></td>
+                <td data-field="notes"><div class="cell-content">${this._escHtml(s.notes)}</div></td>
             </tr>
         `).join('');
         this._populateHistoryFilters();
@@ -103,9 +114,9 @@ Object.assign(TimeTracker.prototype, {
     _exportCsv() {
         const filtered = this._getFilteredSessions();
         if (filtered.length === 0) { TTUI.toast('No data to export.', 'warning'); return; }
-        const headers = ['Date','Project','User','Start Time','End Time','Paused Time','Duration','Description','Task Type','Subtask Type','Notes'];
+        const headers = ['Start Date', 'End Date', 'Project','User','Start Time','End Time','Paused Time','Duration','Description','Task Type','Subtask Type','Notes'];
         const rows = filtered.map(s => [
-            s.date, s.projectName, s.userName, s.startTime, s.endTime,
+            s.startDate, s.endDate, s.projectName, s.userName, s.startTime, s.endTime,
             s.pausedTime, s.duration, s.description, s.taskType, s.subtaskType, s.notes
         ].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(','));
         const csv = [headers.join(','), ...rows].join('\n');

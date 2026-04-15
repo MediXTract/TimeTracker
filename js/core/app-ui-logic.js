@@ -85,35 +85,51 @@ Object.assign(TimeTracker.prototype, {
 
     // ── Comboboxes ────────────────────────────────
     _initComboboxes() {
-        const ids = ['inputProject', 'inputSettingsUser', 'inputTaskType', 'inputSubtaskType'];
+        const ids = ['inputProject', 'inputSettingsUser', 'inputTaskType', 'inputSubtaskType', 'trackerStartTime', 'trackerEndTime', 'trackerPausedTime'];
         ids.forEach(id => {
             const input = document.getElementById(id);
             if (!input) return;
             const trigger = (e) => {
                 let options = [];
                 if (id === 'inputProject')     options = this.knownProjects;
-                else if (id === 'inputSettingsUser')   options = this.knownUsers;
+                else if (id === 'inputSettingsUser')   options = ["Joan", "Tomas"];
                 else if (id === 'inputTaskType') options = this.knownTaskTypes;
                 else if (id === 'inputSubtaskType') {
                     const taskType = document.getElementById('inputTaskType')?.value || '';
                     options = this.knownSubtaskTypes(taskType);
                 }
-                TTUI.openCombobox(id, options, val => {
-                    input.value = val;
-                    if (id === 'inputSubtaskType') {
-                        const taskInput = document.getElementById('inputTaskType');
-                        if (taskInput && !taskInput.value) {
-                            const tasks = this._getPotentialTaskTypesForSubtask(val);
-                            if (tasks.length === 1) taskInput.value = tasks[0];
+                else if (['trackerStartTime', 'trackerEndTime', 'trackerPausedTime'].includes(id)) {
+                    options = TTUtils.getTimeOptions();
+                }
+
+                const isTimeOrUser = ['inputSettingsUser', 'trackerStartTime', 'trackerEndTime', 'trackerPausedTime'].includes(id);
+                const isTimeOnly   = ['trackerStartTime', 'trackerEndTime', 'trackerPausedTime'].includes(id);
+
+                if (isTimeOnly) {
+                    TTUI.openTimePicker(id, val => {
+                        input.value = val;
+                        this._updateButtonsState();
+                        this._saveLocalSettings();
+                    });
+                } else {
+                    TTUI.openCombobox(id, options, val => {
+                        input.value = val;
+                        if (id === 'inputSubtaskType') {
+                            const taskInput = document.getElementById('inputTaskType');
+                            if (taskInput && !taskInput.value) {
+                                const tasks = this._getPotentialTaskTypesForSubtask(val);
+                                if (tasks.length === 1) taskInput.value = tasks[0];
+                            }
                         }
-                    }
-                    this._updateButtonsState();
-                    this._saveLocalSettings();
-                });
+                        this._updateButtonsState();
+                        this._saveLocalSettings();
+                    }, !isTimeOrUser);
+                }
                 if (e.type === 'input') this._updateButtonsState();
             };
             input.addEventListener('focus', trigger);
             input.addEventListener('input', trigger);
+            input.addEventListener('click', trigger);
         });
     },
 
@@ -144,10 +160,21 @@ Object.assign(TimeTracker.prototype, {
         const now = new Date();
         const monthPrefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
         const monthSessions = (this.sessions || []).filter(s => 
-            s.userName === user && s.date && s.date.startsWith(monthPrefix)
+            s.userName === user && s.startDate && s.startDate.startsWith(monthPrefix)
         );
         const totalSecs = monthSessions.reduce((acc, s) => acc + TTUtils.parseTimeToSecs(s.duration), 0);
         const fishCount = Math.min(Math.floor(totalSecs / 3600), 48);
         TTUI.createFloatingElements('aquarium-elements', fishCount);
+    },
+
+    toggleCollaborativeWork() {
+        this.isCollaborative = !this.isCollaborative;
+        const btn = document.getElementById('btnCollab');
+        if (btn) {
+            btn.classList.toggle('active', this.isCollaborative);
+            if (this.isCollaborative) {
+                TTUI.toast('Collaborative mode active: hours will count for Joan & Tomas.', 'success');
+            }
+        }
     }
 });

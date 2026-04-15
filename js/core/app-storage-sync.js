@@ -65,7 +65,7 @@ Object.assign(TimeTracker.prototype, {
 
                 if (diskOnlyData.length > 0) {
                     this.sessions = [...diskOnlyData, ...this.sessions]
-                        .sort((a, b) => (a.date + a.startTime).localeCompare(b.date + b.startTime));
+                        .sort((a, b) => (a.startDate + a.startTime).localeCompare(b.startDate + b.startTime));
                     this.renderSessionsTable();
                     this.renderHistoryTable();
                     this._updateStatsRow();

@@ -8,6 +8,8 @@ class TimeTracker {
         this.sessions   = [];      // All loaded sessions
         this.theme      = 'dark';
         this.state      = 'idle';  // 'idle' | 'running' | 'paused'
+        this.isCollaborative = false; // Toggle for Joan & Tomas
+
 
         // ── Timer State ───────────────────────────
         this.startTime    = null;   // Date when timer started
@@ -37,8 +39,10 @@ class TimeTracker {
         this._updateButtonsState();
 
         // Set today's date
-        const dateInput = document.getElementById('trackerDate');
-        if (dateInput) dateInput.value = TTUtils.toDateStr();
+        const startInput = document.getElementById('trackerStartDate');
+        const endInput   = document.getElementById('trackerEndDate');
+        if (startInput) startInput.value = TTUtils.toDateStr();
+        if (endInput)   endInput.value   = TTUtils.toDateStr();
 
         // Theme
         document.documentElement.setAttribute('data-theme', this.theme);
@@ -95,7 +99,7 @@ class TimeTracker {
         });
 
         // Mandatory field validation on input
-        ['inputProject', 'inputSettingsUser', 'trackerDate', 'trackerStartTime', 'trackerEndTime'].forEach(id => {
+        ['inputProject', 'inputSettingsUser', 'trackerStartDate', 'trackerEndDate', 'trackerStartTime', 'trackerEndTime'].forEach(id => {
             document.getElementById(id)?.addEventListener('input', () => this._updateButtonsState());
             document.getElementById(id)?.addEventListener('change', () => this._updateButtonsState());
         });
@@ -105,6 +109,8 @@ class TimeTracker {
         document.getElementById('btnPause')?.addEventListener('click',  () => this.pause());
         document.getElementById('btnResume')?.addEventListener('click', () => this.resume());
         document.getElementById('btnSaveManual')?.addEventListener('click', () => this.save());
+        document.getElementById('btnCollab')?.addEventListener('click', () => this.toggleCollaborativeWork());
+
 
         // Combobox events
         this._initComboboxes();

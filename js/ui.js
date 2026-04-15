@@ -153,7 +153,7 @@ const TTUI = {
     },
 
     /* ── Combobox ─────────────────────────────── */
-    openCombobox(inputOrId, options, onSelect) {
+    openCombobox(inputOrId, options, onSelect, allowAdd = true) {
         const input = (typeof inputOrId === 'string') ? document.getElementById(inputOrId) : inputOrId;
         if (!input) return;
 
@@ -165,11 +165,11 @@ const TTUI = {
             wrap.appendChild(dd);
         }
 
-        const query = input.value.toLowerCase();
+        const query = input.readOnly ? '' : input.value.toLowerCase();
         const filtered = options.filter(o => o.toLowerCase().includes(query));
 
         dd.innerHTML = '';
-        if (query && !options.map(o => o.toLowerCase()).includes(query)) {
+        if (allowAdd && query && !options.map(o => o.toLowerCase()).includes(query)) {
             const newOpt = document.createElement('div');
             newOpt.className = 'combobox-option new-entry';
             newOpt.innerHTML = `<span class="combobox-option-icon">✚</span> Add "${input.value}"`;
@@ -202,6 +202,74 @@ const TTUI = {
 
     closeCombobox(dd) {
         if (dd) dd.classList.remove('open');
+    },
+
+    /* ── Specialized Time Picker ──────────────── */
+    openTimePicker(inputOrId, onSelect) {
+        const input = (typeof inputOrId === 'string') ? document.getElementById(inputOrId) : inputOrId;
+        if (!input) return;
+
+        const wrap = input.closest('.combobox-wrap');
+        let dd = wrap.querySelector('.time-picker-dropdown');
+        if (!dd) {
+            dd = document.createElement('div');
+            dd.className = 'time-picker-dropdown';
+            wrap.appendChild(dd);
+        }
+
+        const currentVal = input.value || '00:00';
+        let [curH, curM] = currentVal.includes(':') ? currentVal.split(':') : ['00', '00'];
+
+        const hours = Array.from({length: 24}, (_, i) => String(i).padStart(2, '0'));
+        const mins  = Array.from({length: 12}, (_, i) => String(i * 5).padStart(2, '0'));
+
+        dd.innerHTML = `
+            <div class="time-picker-columns">
+                <div class="time-column hours-col">
+                    ${hours.map(h => `<div class="time-opt ${h === curH ? 'active' : ''}" data-h="${h}">${h}</div>`).join('')}
+                </div>
+                <div class="time-column mins-col">
+                    ${mins.map(m => `<div class="time-opt ${m === curM ? 'active' : ''}" data-m="${m}">${m}</div>`).join('')}
+                </div>
+            </div>
+        `;
+
+        dd.querySelectorAll('.time-opt[data-h]').forEach(opt => {
+            opt.onmousedown = (e) => {
+                e.preventDefault();
+                curH = opt.dataset.h;
+                dd.querySelectorAll('.hours-col .time-opt').forEach(o => o.classList.remove('active'));
+                opt.classList.add('active');
+                onSelect(`${curH}:${curM}`);
+            };
+        });
+
+        dd.querySelectorAll('.time-opt[data-m]').forEach(opt => {
+            opt.onmousedown = (e) => {
+                e.preventDefault();
+                curM = opt.dataset.m;
+                onSelect(`${curH}:${curM}`);
+                this.closeTimePicker(dd);
+            };
+        });
+
+        dd.classList.add('open');
+
+        const close = (e) => {
+            if (!wrap.contains(e.target)) {
+                this.closeTimePicker(dd);
+                document.removeEventListener('mousedown', close);
+            }
+        };
+        setTimeout(() => document.addEventListener('mousedown', close), 50);
+    },
+
+    closeTimePicker(dd) {
+        if (dd) dd.classList.remove('open');
+    },
+
+    closeAllTimePickers() {
+        document.querySelectorAll('.time-picker-dropdown.open').forEach(d => d.classList.remove('open'));
     },
 
     closeAllComboboxes() {

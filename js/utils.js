@@ -12,12 +12,32 @@ const TTUtils = {
         });
     },
 
-    /** Format a Date to HH:mm:ss */
+    /** Return array of "HH:mm" strings in 5-min increments */
+    getTimeOptions() {
+        const opts = [];
+        for (let h = 0; h < 24; h++) {
+            for (let m = 0; m < 60; m += 5) {
+                opts.push(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+            }
+        }
+        return opts;
+    },
+
+    /** Format a Date to HH:mm (rounded to nearest 5 mins) */
     toTimeStr(date = new Date()) {
-        const h = String(date.getHours()).padStart(2, '0');
-        const m = String(date.getMinutes()).padStart(2, '0');
-        const s = String(date.getSeconds()).padStart(2, '0');
-        return `${h}:${m}:${s}`;
+        let h = date.getHours();
+        let m = date.getMinutes();
+        
+        // Round to nearest 5
+        m = Math.round(m / 5) * 5;
+        if (m === 60) {
+            m = 0;
+            h = (h + 1) % 24;
+        }
+        
+        const hh = String(h).padStart(2, '0');
+        const mm = String(m).padStart(2, '0');
+        return `${hh}:${mm}`;
     },
 
     /** Format a Date to YYYY-MM-DD */
@@ -40,39 +60,44 @@ const TTUtils = {
         return `${YY}${MM}${DD}${hh}${mm}${ss}`;
     },
 
-    /** Parse "HH:mm:ss" to total seconds */
+    /** Parse "HH:mm" or "HH:mm:ss" to total seconds */
     parseTimeToSecs(str) {
         if (!str) return 0;
         const parts = String(str).split(':').map(Number);
-        if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-        if (parts.length === 2) return parts[0] * 60 + parts[1];
+        if (parts.length >= 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        if (parts.length === 2) return parts[0] * 3600 + parts[1] * 60;
         return 0;
     },
 
-    /** Format seconds to "HH:mm:ss" */
+    /** Format seconds to "HH:mm" (rounded to nearest 5 mins) */
     secsToTime(totalSecs) {
-        if (isNaN(totalSecs) || totalSecs < 0) return '00:00:00';
-        const h = Math.floor(totalSecs / 3600);
-        const m = Math.floor((totalSecs % 3600) / 60);
-        const s = totalSecs % 60;
-        return [h, m, s].map(v => String(Math.floor(v)).padStart(2, '0')).join(':');
+        if (isNaN(totalSecs) || totalSecs < 0) return '00:00';
+        
+        // Round to nearest 300 seconds (5 minutes)
+        const roundedSecs = Math.round(totalSecs / 300) * 300;
+        
+        const h = Math.floor(roundedSecs / 3600);
+        const m = Math.floor((roundedSecs % 3600) / 60);
+        return [h, m].map(v => String(Math.floor(v)).padStart(2, '0')).join(':');
     },
 
     /**
      * Calculate duration in seconds:
-     *   (endTime - startTime) - pausedTime
-     * All args are "HH:mm:ss" strings.
+     *   (endDateTime - startDateTime) - pausedTime
      */
-    calcDuration(startTime, endTime, pausedTime = '00:00:00') {
-        if (!startTime || !endTime) return '00:00:00';
-        const [sh, sm, ss] = startTime.split(':').map(Number);
-        const [eh, em, es] = endTime.split(':').map(Number);
-        const startSecs = sh * 3600 + sm * 60 + ss;
-        const endSecs   = eh * 3600 + em * 60 + es;
+    calcDuration(startDate, startTime, endDate, endTime, pausedTime = '00:00:00') {
+        if (!startDate || !startTime || !endDate || !endTime) return '00:00:00';
+        
+        const start = new Date(`${startDate}T${startTime}`);
+        const end   = new Date(`${endDate}T${endTime}`);
+        
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return '00:00:00';
 
+        const diffMs = end - start;
         const pausedSecs = this.parseTimeToSecs(pausedTime);
-        const dur = Math.max(0, endSecs - startSecs - pausedSecs);
-        return this.secsToTime(dur);
+        const durSecs = Math.max(0, Math.floor(diffMs / 1000) - pausedSecs);
+        
+        return this.secsToTime(durSecs);
     },
 
     /** Parse a stored record to ensure all fields are present */
@@ -84,12 +109,14 @@ const TTUtils = {
             description: r.description || '',
             taskType:    r.taskType    || '',
             subtaskType: r.subtaskType || '',
-            date:        r.date        || this.toDateStr(),
+            startDate:   r.startDate   || r.date || this.toDateStr(),
+            endDate:     r.endDate     || r.date || this.toDateStr(),
             startTime:   r.startTime   || '',
             endTime:     r.endTime     || '',
             pausedTime:  r.pausedTime  || '00:00:00',
             duration:    r.duration    || '00:00:00',
-            notes:       r.notes       || ''
+            notes:       r.notes       || '',
+            isCollaborative: !!r.isCollaborative
         };
     },
 
