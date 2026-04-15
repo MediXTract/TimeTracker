@@ -127,7 +127,7 @@
                     <div class="tracker-side-left">
                         <div id="timerDisplay" class="timer-display">
                             <div id="timerClock" class="timer-clock" aria-live="polite" aria-label="Elapsed time">
-                                00:00:00</div>
+                                00:00</div>
                             <div class="timer-paused-label" aria-hidden="true">⏸ PAUSED</div>
                         </div>
 
@@ -191,7 +191,7 @@
                                     <label for="trackerStartTime">Start Time</label>
                                     <div class="combobox-wrap">
                                         <input id="trackerStartTime" class="combobox-input" type="text" placeholder="--:--"
-                                            aria-label="Start time" readonly style="cursor:pointer;" />
+                                            aria-label="Start time" />
                                         <span class="combobox-arrow" aria-hidden="true">▾</span>
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@
                                     <label for="trackerEndTime">End Time</label>
                                     <div class="combobox-wrap">
                                         <input id="trackerEndTime" class="combobox-input" type="text" placeholder="--:--"
-                                            aria-label="End time" readonly style="cursor:pointer;" />
+                                            aria-label="End time" />
                                         <span class="combobox-arrow" aria-hidden="true">▾</span>
                                     </div>
                                 </div>
@@ -218,7 +218,7 @@
                                 <label for="trackerPausedTime">Paused Time</label>
                                 <div class="combobox-wrap">
                                     <input id="trackerPausedTime" class="combobox-input" type="text" placeholder="--:--"
-                                        aria-label="Paused time" readonly style="cursor:pointer;" />
+                                        aria-label="Paused time" />
                                     <span class="combobox-arrow" aria-hidden="true">▾</span>
                                 </div>
                             </div>
@@ -368,7 +368,7 @@
                         </div>
                     </div>
                     <div class="filter-actions" style="margin-top:0.85rem;">
-                        <button id="btnApplyFilters" class="btn btn-primary btn-sm">
+                        <button id="btnApplyFilters" class="btn btn-primary btn-sm" style="display:none;">
                             <span aria-hidden="true">🔍</span> Apply Filters
                         </button>
                         <button id="btnClearFilters" class="btn btn-ghost btn-sm">

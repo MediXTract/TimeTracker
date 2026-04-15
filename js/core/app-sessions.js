@@ -182,7 +182,8 @@ Object.assign(TimeTracker.prototype, {
             editor.className  = 'combobox-input cell-edit-input';
             editor.value      = currentVal;
             editor.autocomplete = 'off';
-            if (type === 'user-select' || isTimeSelect) {
+            if (isTimeSelect) TTUI.applyTimeMask(editor);
+            if (type === 'user-select') {
                 editor.readOnly = true;
                 editor.style.cursor = 'pointer';
             }
@@ -229,7 +230,7 @@ Object.assign(TimeTracker.prototype, {
 
             if (isDate || isTime) {
                 editor.type = isDate ? 'date' : 'time';
-                if (isTime) editor.step = '1';
+                if (isTime) editor.step = '300';
                 cell.innerHTML = '';
                 cell.appendChild(editor);
                 editor.focus();
@@ -270,8 +271,7 @@ Object.assign(TimeTracker.prototype, {
                 session[field] = finalVal;
             }
 
-            if (['startTime', 'endTime', 'pausedTime'].includes(field)) {
-                if (newVal.length === 5) session[field] = newVal + ':00';
+            if (['startTime', 'endTime', 'pausedTime', 'startDate', 'endDate'].includes(field)) {
                 session.duration = TTUtils.calcDuration(session.startDate, session.startTime, session.endDate, session.endTime, session.pausedTime);
             }
             this.renderSessionsTable();

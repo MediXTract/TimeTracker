@@ -329,5 +329,93 @@ const TTUI = {
 
             container.appendChild(fish);
         }
+    },
+
+    /* ── Time Input Masking ───────────────────── */
+    applyTimeMask(input) {
+        if (input.dataset.masked) return;
+        input.dataset.masked = "true";
+
+        // Initialize if empty
+        if (!input.value || input.value === '--:--') input.value = '00:00';
+
+        let justFocused = false;
+
+        input.addEventListener('keydown', (e) => {
+            const isDigit = /^\d$/.test(e.key);
+            const isBackspace = e.key === 'Backspace';
+            const isDelete = e.key === 'Delete';
+
+            if (e.key === 'Enter') {
+                input.blur();
+                return;
+            }
+
+            if (!isDigit && !isBackspace && !isDelete && !e.key.startsWith('Arrow') && e.key !== 'Tab') {
+                e.preventDefault();
+                return;
+            }
+
+            if (isDigit || isBackspace || isDelete) {
+                e.preventDefault();
+                
+                let seq = input.dataset.timeSeq || "";
+                
+                if (isDigit) {
+                    if (justFocused) {
+                        seq = e.key;
+                    } else if (seq.length < 4) {
+                        seq += e.key;
+                    }
+                    justFocused = false;
+                } else {
+                    if (justFocused || !seq) {
+                        seq = input.value.replace(/\D/g, '');
+                    }
+                    seq = seq.slice(0, -1);
+                    justFocused = false;
+                }
+                
+                input.dataset.timeSeq = seq;
+                
+                let hStr = "00";
+                let mStr = "00";
+
+                if (seq.length === 1) {
+                    hStr = `0${seq}`;
+                } else if (seq.length === 2) {
+                    hStr = seq;
+                } else if (seq.length === 3) {
+                    hStr = seq.slice(0, 2);
+                    let m = parseInt(seq[2]);
+                    // Round single digit minute: 1,2->0, 3,4,5,6,7->5, 8,9->10 (rollover)
+                    m = Math.round(m / 5) * 5;
+                    mStr = `0${m}`;
+                } else if (seq.length === 4) {
+                    hStr = seq.slice(0, 2);
+                    let m = parseInt(seq.slice(2));
+                    m = Math.round(m / 5) * 5;
+                    if (m >= 60) {
+                        m = 55; // Keep it simple within the same hour for the mask
+                    }
+                    mStr = String(m).padStart(2, '0');
+                }
+                
+                input.value = `${hStr}:${mStr}`;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+
+        input.addEventListener('focus', () => {
+            justFocused = true;
+            const clean = input.value.replace(/\D/g, '');
+            input.dataset.timeSeq = (clean === '0000') ? "" : clean;
+            setTimeout(() => input.select(), 10);
+        });
+
+        input.addEventListener('mousedown', () => {
+            if (document.activeElement === input) {
+            }
+        });
     }
 };

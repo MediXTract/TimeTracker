@@ -85,13 +85,13 @@ const TTUtils = {
      * Calculate duration in seconds:
      *   (endDateTime - startDateTime) - pausedTime
      */
-    calcDuration(startDate, startTime, endDate, endTime, pausedTime = '00:00:00') {
-        if (!startDate || !startTime || !endDate || !endTime) return '00:00:00';
+    calcDuration(startDate, startTime, endDate, endTime, pausedTime = '00:00') {
+        if (!startDate || !startTime || !endDate || !endTime) return '00:00';
         
         const start = new Date(`${startDate}T${startTime}`);
         const end   = new Date(`${endDate}T${endTime}`);
         
-        if (isNaN(start.getTime()) || isNaN(end.getTime())) return '00:00:00';
+        if (isNaN(start.getTime()) || isNaN(end.getTime())) return '00:00';
 
         const diffMs = end - start;
         const pausedSecs = this.parseTimeToSecs(pausedTime);
@@ -113,8 +113,8 @@ const TTUtils = {
             endDate:     r.endDate     || r.date || this.toDateStr(),
             startTime:   r.startTime   || '',
             endTime:     r.endTime     || '',
-            pausedTime:  r.pausedTime  || '00:00:00',
-            duration:    r.duration    || '00:00:00',
+            pausedTime:  r.pausedTime  || '00:00',
+            duration:    r.duration    || '00:00',
             notes:       r.notes       || '',
             isCollaborative: !!r.isCollaborative
         };

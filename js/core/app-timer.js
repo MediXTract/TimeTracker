@@ -14,20 +14,25 @@ Object.assign(TimeTracker.prototype, {
         if (btnPause)  btnPause.disabled  = !canStart;
         if (btnResume) btnResume.disabled = !canStart;
 
-        const date  = document.getElementById('trackerDate')?.value;
-        const start = document.getElementById('trackerStartTime')?.value;
-        const end   = document.getElementById('trackerEndTime')?.value;
+        const startDate = document.getElementById('trackerStartDate')?.value;
+        const endDate   = document.getElementById('trackerEndDate')?.value;
+        const start     = document.getElementById('trackerStartTime')?.value;
+        const end       = document.getElementById('trackerEndTime')?.value;
         
-        const startSecs = TTUtils.parseTimeToSecs(start);
-        const endSecs   = TTUtils.parseTimeToSecs(end);
-        const timeValid = (!!start && !!end) ? (endSecs >= startSecs) : true;
+        // If we have both dates and times, compare fully to support multi-day sessions
+        let timeValid = true;
+        if (startDate && endDate && start && end && start !== '--:--' && end !== '--:--') {
+            const startDt = new Date(`${startDate}T${start}`);
+            const endDt   = new Date(`${endDate}T${end}`);
+            timeValid = !isNaN(startDt) && !isNaN(endDt) && endDt >= startDt;
+        }
 
         const errorEl = document.getElementById('timeError');
         if (errorEl) {
             errorEl.classList.toggle('hidden', timeValid);
         }
 
-        const canSave = canStart && !!date && (!!start && start !== '--:--:--') && (!!end && end !== '--:--:--') && timeValid;
+        const canSave = canStart && !!startDate && !!endDate && (!!start && start !== '--:--') && (!!end && end !== '--:--') && timeValid;
 
         const btnSaveManual = document.getElementById('btnSaveManual');
         if (btnSaveManual) btnSaveManual.disabled = !canSave;
@@ -44,6 +49,12 @@ Object.assign(TimeTracker.prototype, {
 
         const startEl = document.getElementById('trackerStartTime');
         if (startEl) startEl.value = TTUtils.toTimeStr(this.startTime);
+
+        const startDateEl = document.getElementById('trackerStartDate');
+        if (startDateEl) startDateEl.value = TTUtils.toDateStr(this.startTime);
+
+        const endDateEl = document.getElementById('trackerEndDate');
+        if (endDateEl) endDateEl.value = TTUtils.toDateStr(this.startTime);
 
         this._tick();
         this.tickInterval = setInterval(() => this._tick(), 1000);
@@ -71,6 +82,10 @@ Object.assign(TimeTracker.prototype, {
         const endEl = document.getElementById('trackerEndTime');
         if (endEl && !endEl.value) {
             endEl.value = TTUtils.toTimeStr(new Date());
+        }
+        const endDateEl = document.getElementById('trackerEndDate');
+        if (endDateEl) {
+            endDateEl.value = TTUtils.toDateStr(new Date());
         }
         this._updateButtonsState();
     },
@@ -110,9 +125,10 @@ Object.assign(TimeTracker.prototype, {
         document.getElementById('trackerStartTime').value  = '';
         document.getElementById('trackerEndTime').value    = '';
         document.getElementById('trackerPausedTime').value = '';
-        document.getElementById('trackerDate').value       = TTUtils.toDateStr();
+        document.getElementById('trackerStartDate').value  = TTUtils.toDateStr();
+        document.getElementById('trackerEndDate').value    = TTUtils.toDateStr();
         const clockEl = document.getElementById('timerClock');
-        if (clockEl) clockEl.textContent = '00:00:00';
+        if (clockEl) clockEl.textContent = '00:00';
         this.pausedSecs = 0;
         this._updateButtonsState();
     }

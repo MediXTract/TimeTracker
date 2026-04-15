@@ -88,7 +88,9 @@ Object.assign(TimeTracker.prototype, {
         const ids = ['inputProject', 'inputSettingsUser', 'inputTaskType', 'inputSubtaskType', 'trackerStartTime', 'trackerEndTime', 'trackerPausedTime'];
         ids.forEach(id => {
             const input = document.getElementById(id);
-            if (!input) return;
+            if (!input || input.dataset.initDone) return;
+            input.dataset.initDone = "true";
+
             const trigger = (e) => {
                 let options = [];
                 if (id === 'inputProject')     options = this.knownProjects;
@@ -130,6 +132,10 @@ Object.assign(TimeTracker.prototype, {
             input.addEventListener('focus', trigger);
             input.addEventListener('input', trigger);
             input.addEventListener('click', trigger);
+
+            if (['trackerStartTime', 'trackerEndTime', 'trackerPausedTime'].includes(id)) {
+                TTUI.applyTimeMask(input);
+            }
         });
     },
 

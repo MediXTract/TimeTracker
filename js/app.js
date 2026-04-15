@@ -116,12 +116,18 @@ class TimeTracker {
         this._initComboboxes();
         this._initAutoDimming();
 
-        // History filters
-        document.getElementById('btnApplyFilters')?.addEventListener('click',  () => this.renderHistoryTable());
+        // History filters (auto-apply)
+        ['filterDateFrom', 'filterDateTo', 'filterProject', 'filterUser', 'filterTaskType', 'filterSubtaskType'].forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const eventType = el.tagName === 'SELECT' ? 'change' : 'input';
+            el.addEventListener(eventType, () => {
+                this.renderHistoryTable();
+                this._updateStatsRow();
+            });
+        });
         document.getElementById('btnClearFilters')?.addEventListener('click',  () => this._clearFilters());
         document.getElementById('btnExportCsv')?.addEventListener('click',    () => this._exportCsv());
-        document.getElementById('filterDateFrom')?.addEventListener('change',  () => this.renderHistoryTable());
-        document.getElementById('filterDateTo')?.addEventListener('change',    () => this.renderHistoryTable());
 
         // Polling for external file changes
         this.pollInterval = setInterval(() => this._checkExternalUpdate(), 8000);
