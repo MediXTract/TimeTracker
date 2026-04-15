@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0"
 
 echo ===================================================
-echo       MediXtract Schema Editor - Updater
+echo       MediXtract TimeTracker - Updater
 echo ===================================================
 echo.
 
@@ -28,7 +28,7 @@ if %ERRORLEVEL% NEQ 0 (
 ) else (
     echo.
     echo Done! The program has been updated to the latest version.
-    echo Your 'projects' folder was kept safe.
+    echo Your data folders were kept safe.
     echo.
     pause
 )

@@ -58,7 +58,7 @@ try {
         throw "Failed to find extracted folder in $tempDir"
     }
     
-    Write-Host "Syncing files (preserving 'projects' folder)..."
+    Write-Host "Syncing files (preserving data folders)..."
     
     # Get all items in the new version
     $newItems = Get-ChildItem -Path $extractedFolder.FullName
@@ -66,9 +66,10 @@ try {
     foreach ($item in $newItems) {
         $targetPath = Join-Path $currentDir $item.Name
         
-        # SKIP the projects folder
-        if ($item.Name -eq "projects") {
-            Write-Host "Skipping '$($item.Name)' folder (protected)..." -ForegroundColor Gray
+        # SKIP protected data items
+        $protectedItems = @("main_TT", "security_copies_TT", "TT_data.json")
+        if ($protectedItems -contains $item.Name) {
+            Write-Host "Skipping '$($item.Name)' (protected)..." -ForegroundColor Gray
             continue
         }
         
