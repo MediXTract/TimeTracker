@@ -27,7 +27,7 @@ if %ERRORLEVEL% NEQ 0 (
     pause
 ) else (
     echo.
-    echo Done! The program has been updated to the latest version.
+    echo Done^! The program has been updated to the latest version.
     echo Your data folders were kept safe.
     echo.
     pause
